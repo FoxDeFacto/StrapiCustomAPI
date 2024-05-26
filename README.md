@@ -1,61 +1,85 @@
-<<<<<<< HEAD
-# 🚀 Getting started with Strapi
+# Custom API with Strapi
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
+This project is a custom API built with Strapi that includes a web scraper for extracting content from various websites.
 
-### `develop`
+## Description
 
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
+This Strapi application allows you to scrape content from websites such as CSFD.cz, MyAnimeList, and Steam. It uses Axios, JSDOM, and Cheerio for web scraping and parsing HTML content.
 
+## Setup
+
+### Prerequisites
+
+- Node.js (version 18.x to 20.x)
+- npm (version 6.0.0 or higher)
+
+### Installation
+
+1. Clone the repository:
+
+    ```sh
+    git clone https://github.com/FoxDeFacto/StrapiCustomAPI.git
+    cd custom-api-strapi
+    ```
+
+2. Install dependencies:
+
+    ```sh
+    npm install
+    ```
+
+3. Start Strapi in development mode:
+
+    ```sh
+    npm run develop
+    ```
+
+## Usage
+
+### Starting the Server
+
+To start the server in production mode, use:
+
+```sh
+npm start
 ```
-npm run develop
-# or
-yarn develop
-```
 
-### `start`
+### Building the Project
 
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
+To build the Strapi project, use:
 
-```
-npm run start
-# or
-yarn start
-```
-
-### `build`
-
-Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
-
-```
+```sh
 npm run build
-# or
-yarn build
 ```
 
-## ⚙️ Deployment
 
-Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
+### API Endpoints
 
-## 📚 Learn more
+#### Web Scraper
 
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
+This endpoint allows you to scrape content from supported websites.
 
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
+- **GET /web-scraper/get-content**
 
-## ✨ Community
+  Query Parameters:
+  - `url` (string): The URL of the website you want to scrape.
 
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
+  Example request:
 
----
+  ```sh
+  curl -X GET "http://localhost:1337/web-scraper/get-content?url=https://www.csfd.cz/film/12345"
+  ```
 
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
-=======
-# StrapiCustomAPI
->>>>>>> 885404bbaad43e0d53dd800375d81af68fef8db0
+### Folder Structure
+
+- **/src/api/web-scraper/controllers**: Contains the controller for handling API requests.
+- **/src/api/web-scraper/routes**: Defines the routes for the web scraper API.
+- **/src/api/web-scraper/services**: Contains the service logic for web scraping.
+
+## Author
+
+- Ondřej Liška
+
+## License
+
+This project is licensed under the MIT License.
