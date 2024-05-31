@@ -117,106 +117,36 @@ const handleSteamData = async (url) => {
 };
 
 
-// Funkce na zpracování dat z EpicGames - nefunguje, protože to axios crashn
-//TODO fix ten zkurvený axios
-const handleEpicStoreData = async (url) => {
-
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
-  
-  // Disable loading images and styles
-  await page.setRequestInterception(true);
-  page.on('request', (request) => {
-    if (['image', 'stylesheet', 'font'].includes(request.resourceType())) {
-      request.abort();
-    } else {
-      request.continue();
-    }
-  });
-
-
-  await page.goto(url, { waitUntil: 'networkidle2' });
-
-
-  if (await page.$('#btn_age_continue') !== null) 
-  {
-    // Počká na vykreslení formuláře
-    await page.waitForSelector('form');
-
-    // Vybere dle id jednotlivé hodnoty
-    await page.select('select#year_toggle', '1990'); // Rok
-    await page.select('select#month_menu', '01');  // Měsíc
-    await page.select('select#day_toggle', '01');    // Den
-
-    // Klikne na ověření věku
-    await page.click('#btn_age_continue');
-
-    // Počká až se stránka přesměruje
-    await page.waitForNavigation({ waitUntil: 'networkidle2' });
-  }
-
-
-  // Vybere data na základě parametrů
-  const gameName = cleanText(await page.evaluate(element => element.textContent, await page.$('.zkurvena_classa'))); // id
-
-  /*
-  const description = cleanText(await page.evaluate(element => element.textContent, await page.$('.game_description_snippet'))); // třída
-  
-  // Vybere skupinu elementů v divu
-  const tags = await page.evaluate(() => {
-      const elements = Array.from(document.querySelectorAll('.glance_tags.popular_tags .app_tag'));
-      return elements.slice(0, -1).map(tag => tag.textContent.trim());
-  });
-
-  // Vybere skupinu elementů v divu
-  const requirements = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('.game_area_sys_req_rightCol li')).map(tag => tag.textContent.trim());
-  });
- */
-  await browser.close();
-
-  console.log(gameName);
-
-  return { 
-    gameName, 
-    /*
-    description, 
-    tags, 
-    requirements 
-    */
-  };
-};
-
-
 // Hlavní funkce, která zavolá další funkci dle formátu url
 const processDataBasedOnUrl = async (url) => {
   try {
+
     const decodedUrl = decodeURIComponent(url);
     if (!validUrl.isHttpsUri(decodedUrl)) { //Kontroluje, zde je url ve správném formátu
       throw new Error('Invalid URL');
     }
 
-    const { data } = await axios.get(url);
-    const { document } = new JSDOM(data).window;
+    const fetchData = async (url) => {
+      const { data } = await axios.get(url);
+      return new JSDOM(data).window.document;
+    };
 
     let content;
 
     switch (true) {
-      case decodedUrl.startsWith('https://www.csfd.cz/'):
+      case decodedUrl.startsWith('https://www.csfd.cz/'): //Funguje
         console.log("ČSFD");
-        content = handleCsfdData(document);
+        const csfd =  await fetchData(decodedUrl);
+        content = handleCsfdData(csfd);
         break;
-      case decodedUrl.startsWith('https://myanimelist.net/'):
+      case decodedUrl.startsWith('https://myanimelist.net/'): //Funguje
         console.log("MAL");
-        content = handleMalData(document);
+        const mal =  await fetchData(decodedUrl);
+        content = handleMalData(mal);
         break;
-      case decodedUrl.startsWith('https://store.steampowered.com/'):
+      case decodedUrl.startsWith('https://store.steampowered.com/'): //Funguje
         console.log("Steam");
         content = await handleSteamData(decodedUrl);
-        break;
-      case decodedUrl.startsWith('https://store.epicgames.com/'):
-        console.log("Epic");
-        content = await handleEpicStoreData(decodedUrl);
         break;
       default:
         content = { error: 'Unsupported URL type' };
